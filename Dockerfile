@@ -12,6 +12,7 @@ WORKDIR /home/app
 
 # will execute npm install in /home/app because of WORKDIR
 RUN npm install
+RUN npm install express
 
 # no need for /home/app/server.js because of WORKDIR
 CMD ["node", "/home/app/server.js"]

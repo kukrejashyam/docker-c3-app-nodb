@@ -2,69 +2,36 @@
 
 This demo app shows a simple user profile app set up using 
 - index.html with pure js and css styles
-- nodejs backend with express module
-- mongodb for data storage
+- nodejs backend with no database
 
 All components are docker-based
 
 ### With Docker
 
-#### To start the application
+#### Steps to Create image, Container & run the application
 
-Step 1: Create docker network
+Step 1: clone this git repository on your AWS Linux EC2 instance using below command
 
-    docker network create mongo-network 
+    git clone https://github.com/kukrejashyam/docker-c3-app-nodb.git 
 
-Step 2: start mongodb 
+Step 2: Go inside "docker-c3-app-nodb" directory 
 
-    docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password --name mongodb --net mongo-network mongo    
+    cd docker-c3-app-nodb   
 
-Step 3: start mongo-express
+Step 3: Build the version-1 app image with the name "c3-app-nodb" and tag 1.0 using below command
     
-    docker run -d -p 8081:8081 -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin -e ME_CONFIG_MONGODB_ADMINPASSWORD=password --net mongo-network --name mongo-express -e ME_CONFIG_MONGODB_SERVER=mongodb mongo-express   
+    docker build . -t c3-app-nodb:1.0   
 
-_NOTE: creating docker-network in optional. You can start both containers in a default network. In this case, just emit `--net` flag in `docker run` command_
+Step 4: Create a container from the above created image "c3-app-nodb:1.0" and expose it to port 9003 using below command.
 
-Step 4: open mongo-express from browser
+    docker run -d -p 9003:3000 c3-app-nodb:1.0
 
-    http://localhost:8081
+_NOTE: Don't forget to open this port 9003 in security group of respective EC2 instance in your AWS account_
 
-Step 5: create `user-account` _db_ and `users` _collection_ in mongo-express
+Step 5: Now access the below URL in the browser
 
-Step 6: Start your nodejs application locally - go to `app` directory of project 
+    http://ec2-public-ip:9003
+    e.g.  http://184.72.185.255:9003
 
-    npm install 
-    node server.js
-    
-Step 7: Access you nodejs application UI from browser
+_NOTE: Copy the correct Public IP of this EC2 instance from your AWS account_
 
-    http://localhost:3000
-
-### With Docker Compose
-
-#### To start the application
-
-Step 1: start mongodb and mongo-express
-
-    docker-compose -f docker-compose.yaml up
-    
-_You can access the mongo-express under localhost:8080 from your browser_
-    
-Step 2: in mongo-express UI - create a new database "my-db"
-
-Step 3: in mongo-express UI - create a new collection "users" in the database "my-db"       
-    
-Step 4: start node server 
-
-    npm install
-    node server.js
-    
-Step 5: access the nodejs application from browser 
-
-    http://localhost:3000
-
-#### To build a docker image from the application
-
-    docker build -t my-app:1.0 .       
-    
-The dot "." at the end of the command denotes location of the Dockerfile.
